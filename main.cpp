@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <climits>
 #include "graph.h"
 #include "dijkstra.h"
 #include "ev_logic.h"

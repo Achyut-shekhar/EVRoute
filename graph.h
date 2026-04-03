@@ -6,7 +6,7 @@ using namespace std;
 
 struct Edge {
     int to;
-    int distance;
+    int weight;
 };
 
 class Graph {

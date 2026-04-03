@@ -1,97 +1,156 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <map>
 #include <climits>
+#include <algorithm>
 #include "graph.h"
 #include "dijkstra.h"
 #include "ev_logic.h"
 
 using namespace std;
 
-map<int, string> nodeNames;
+string toLower(string s) {
+    transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}
 
-// Load nodes
+map<int, Node> nodes;
+map<string, int> nameToId;
+
 void loadNodes() {
     ifstream file("data/nodes.txt");
+    if (!file.is_open()) {
+        cerr << "ERROR: Cannot open data/nodes.txt\n";
+        return;
+    }
     int id;
     string name;
-
-    while(file >> id >> name) {
-        nodeNames[id] = name;
+    double lat, lon;
+    while (file >> id >> name >> lat >> lon) {
+        nodes[id] = {name, lat, lon};
+        nameToId[toLower(name)] = id;
     }
 }
 
-// Load edges
 void loadEdges(Graph &g) {
     ifstream file("data/edges.txt");
+    if (!file.is_open()) {
+        cerr << "ERROR: Cannot open data/edges.txt\n";
+        return;
+    }
     int u, v, dist;
-
-    while(file >> u >> v >> dist) {
+    while (file >> u >> v >> dist) {
         g.addEdge(u, v, dist);
     }
 }
 
-// Load charging stations
 void loadStations() {
     ifstream file("data/stations.txt");
-    int x;
-
-    while(file >> x) {
-        chargingStations.insert(x);
+    if (!file.is_open()) {
+        cerr << "ERROR: Cannot open data/stations.txt\n";
+        return;
     }
+
+    string line;
+    while (getline(file, line)) {
+        int pos = line.find('#');
+        if (pos != string::npos) line = line.substr(0, pos);
+
+        if (line.empty()) continue;
+
+        int x;
+        stringstream ss(line);
+        if (ss >> x) {
+            // optional future use
+        }
+    }
+}
+
+vector<int> reconstructPath(const vector<int>& parent, int from, int to) {
+    vector<int> path;
+    int temp = to;
+
+    while (temp != -1) {
+        path.push_back(temp);
+        temp = parent[temp];
+    }
+
+    reverse(path.begin(), path.end());
+
+    if (path.empty() || path[0] != from) return {};
+    return path;
 }
 
 int main() {
 
     loadNodes();
 
-    Graph g(nodeNames.size());
+    if (nodes.empty()) {
+        cout << "No nodes loaded.\n";
+        return 1;
+    }
 
+    int maxId = 0;
+    for (auto &p : nodes) {
+        maxId = max(maxId, p.first);
+    }
+
+    Graph g(maxId + 1);
     loadEdges(g);
     loadStations();
 
-    int source, destination, battery;
-
     cout << "Available Locations:\n";
-    for(auto &p : nodeNames) {
-        cout << p.first << " -> " << p.second << endl;
+    for (auto &p : nodes) {
+        cout << p.second.name << "\n";
     }
 
-    cout << "\nEnter source ID: ";
-    cin >> source;
+    string sourceName, destinationName;
+    int batteryPercent;
 
-    cout << "Enter destination ID: ";
-    cin >> destination;
+    cout << "\nEnter source city: ";
+    cin >> sourceName;
 
-    cout << "Enter battery (km): ";
-    cin >> battery;
+    cout << "Enter destination city: ";
+    cin >> destinationName;
 
-    vector<int> dist = dijkstra(g, source);
+    sourceName = toLower(sourceName);
+    destinationName = toLower(destinationName);
 
-    cout << "\n---- RESULT ----\n";
+    if (nameToId.find(sourceName) == nameToId.end() ||
+        nameToId.find(destinationName) == nameToId.end()) {
+        cout << "Invalid city name!\n";
+        return 1;
+    }
 
-    if(dist[destination] == INT_MAX) {
-        cout << "No path exists!\n";
+    int source = nameToId[sourceName];
+    int destination = nameToId[destinationName];
+
+    cout << "Enter battery percentage (0-100): ";
+    cin >> batteryPercent;
+
+    int maxRange = 400;
+    int battery = (batteryPercent * maxRange) / 100;
+
+    vector<int> parent;
+    vector<int> dist = dijkstra(g, source, parent);
+
+    if (dist[destination] == INT_MAX) {
+        cout << "❌ No path exists!\n";
         return 0;
     }
 
-    cout << "Distance required: " << dist[destination] << " km\n";
+    vector<int> path = reconstructPath(parent, source, destination);
 
-    if(canTravel(dist[destination], battery)) {
-        cout << "Direct travel possible from "
-             << nodeNames[source] << " to "
-             << nodeNames[destination] << endl;
-    } else {
-        int station = findNearestStation(dist);
-
-        if(station == -1) {
-            cout << "No charging station available!\n";
-        } else {
-            cout << "Battery low!\n";
-            cout << "Go via charging station: "
-                 << nodeNames[station] << endl;
-        }
+    cout << "\n---- SHORTEST PATH ----\n";
+    for (int i = 0; i < path.size(); i++) {
+        cout << nodes[path[i]].name;
+        if (i != path.size() - 1) cout << " -> ";
     }
+    cout << "\nTotal Distance: " << dist[destination] << " km\n";
+
+    // ✅ Clean EV simulation
+    simulateEV(path, g, battery, nodes);
 
     return 0;
 }

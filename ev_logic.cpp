@@ -1,78 +1,87 @@
 #include "ev_logic.h"
+#include "dijkstra.h"
 #include <iostream>
+#include <climits>
+#include <algorithm>
 using namespace std;
 
-int getDistance(int u, int v, Graph &g) {
-    for (auto &edge : g.adj[u]) {
-        if (edge.to == v)
-            return edge.weight;
-    }
-    return -1;
+vector<int> reconstructPath(const vector<int>& parent, int src, int dest) {
+    vector<int> path;
+    for (int v = dest; v != -1; v = parent[v])
+        path.push_back(v);
+
+    reverse(path.begin(), path.end());
+    if (path.empty() || path[0] != src) return {};
+    return path;
 }
 
-void simulateEV(const vector<int>& path, Graph& g, int battery,
-                const map<int, Node>& nodes) {
+void findBestStations(int source, int battery, Graph& g,
+                      const map<int, vector<string>>& cityStations,
+                      const map<int, Node>& nodes) {
 
-    int maxRange = 400;
-    int remainingBattery = battery;
+    vector<int> parent;
+    vector<int> dist = dijkstra(g, source, parent);
 
-    cout << "\n---- EV ROUTE ----\n";
+    vector<pair<int,int>> candidates;
 
-    for (int i = 1; i < path.size(); i++) {
+    //  iterate over cities instead of stations
+    for (auto &entry : cityStations) {
+        int city = entry.first;
 
-        int u = path[i - 1];
-        int v = path[i];
-
-        int d = -1;
-
-        for (auto &edge : g.adj[u]) {
-            if (edge.to == v) {
-                d = edge.weight;
-                break;
-            }
+        if (dist[city] != INT_MAX && dist[city] <= battery) {
+            candidates.push_back({dist[city], city});
         }
-
-        if (d == -1) {
-            cout << "ERROR: Edge not found\n";
-            return;
-        }
-
-        cout << "\n----------------------------------\n";
-        cout << "From: " << nodes.at(u).name << "\n";
-        cout << "To: " << nodes.at(v).name << "\n";
-        cout << "Distance: " << d << " km\n";
-
-        int percentBefore = (remainingBattery * 100) / maxRange;
-
-        cout << "Battery Before Travel: "
-             << remainingBattery << " km (" << percentBefore << "%)\n";
-
-        //  Impossible case
-        if (d > maxRange) {
-            cout << " Cannot travel this segment (too long)\n";
-            return;
-        }
-
-        //  Charge if needed
-        if (remainingBattery < d) {
-
-            cout << "\nCharging... Done!\n";
-
-            remainingBattery = maxRange;
-
-            cout << "Battery After Charge: 100% (400 km range)\n";
-        }
-
-        // Travel
-        remainingBattery -= d;
-
-        int percentAfter = (remainingBattery * 100) / maxRange;
-
-        cout << "Arrived at: " << nodes.at(v).name << "\n";
-        cout << "Battery After Arrival: "
-             << remainingBattery << " km (" << percentAfter << "%)\n";
     }
 
-    cout << "\n----------------------------------\n";
-    cout << " Destination reached successfully!\n";
+    if (candidates.empty()) {
+        cout << "\n No reachable charging cities!\n";
+        return;
+    }
+
+    sort(candidates.begin(), candidates.end());
+
+    cout << "\n TOP CHARGING OPTIONS:\n";
+
+    int limit = min(3, (int)candidates.size());
+
+    for (int i = 0; i < limit; i++) {
+
+
+        int d = candidates[i].first;
+        int city = candidates[i].second;
+
+        vector<int> path = reconstructPath(parent, source, city);
+
+        cout << "\nOption " << i+1 << ": " << nodes.at(city).name << "\n";
+        cout << "Distance: " << d << " km\n";
+
+        cout << "Path: ";
+        for (int j = 0; j < path.size(); j++) {
+            cout << nodes.at(path[j]).name;
+            if (j != path.size() - 1) cout << " -> ";
+        }
+        cout << "\n";
+
+        int remaining = battery - d;
+        int percent = (remaining * 100) / 400;
+
+        cout << "Battery Left After Arrival: "
+            << remaining << " km (" << percent << "%)\n";
+
+        if (battery - d < 20)
+            cout << " Low safety margin!\n";
+        else
+            cout << " Safe to reach\n";
+
+        //  NEW: show stations inside city
+        cout << "Available Charging Stations:\n";
+
+        const vector<string>& stations = cityStations.at(city);
+
+        for (int k = 0; k < stations.size(); k++) {
+            cout << "  - " << stations[k] << "\n";
+        }
+    }
+
+    cout << "\n BEST OPTION: " << nodes.at(candidates[0].second).name << "\n";
 }

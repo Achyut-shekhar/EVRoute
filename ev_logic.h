@@ -1,25 +1,10 @@
-// #ifndef EV_LOGIC_H
-// #define EV_LOGIC_H
-
-// #include <set>
-// #include <vector>
-// #include "graph.h"
-
-// using namespace std;
-
-// extern set<int> chargingStations;
-
-// bool canTravel(int distance, int battery);
-// int findBestStation(const vector<int>& dist, int source, int battery, int destination, Graph& g, const set<int>& visited);
-
-// #endif
-
 #ifndef EV_LOGIC_H
 #define EV_LOGIC_H
 
 #include "graph.h"
-#include <vector>
+#include <set>
 #include <map>
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -30,7 +15,10 @@ struct Node {
     double lon;
 };
 
-void simulateEV(const vector<int>& path, Graph& g, int battery,
-                const map<int, Node>& nodes);
+vector<int> reconstructPath(const vector<int>& parent, int src, int dest);
+
+void findBestStations(int source, int battery, Graph& g,
+                      const map<int, vector<string>>& cityStations,
+                      const map<int, Node>& nodes);
 
 #endif

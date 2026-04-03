@@ -1,45 +1,45 @@
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-46
-47
+0 Relicell_Delhi_1 ChargeZone_Delhi_2 TataPower_Delhi_3 Ather_Delhi_4
+1 ChargeZone_Mumbai_1 Ather_Mumbai_2 Relicell_Mumbai_3
+2 Relicell_Bangalore_1 TataPower_Bangalore_2
+3 Relicell_Chennai_1 ChargeZone_Chennai_2
+4 Ather_Kolkata_1 Ather_Kolkata_2 ChargeZone_Kolkata_3
+5 Ather_Hyderabad_1 ChargeZone_Hyderabad_2 Relicell_Hyderabad_3 TataPower_Hyderabad_4
+6 Ather_Pune_1 TataPower_Pune_2
+7 Ather_Ahmedabad_1 ChargeZone_Ahmedabad_2 Relicell_Ahmedabad_3
+8 Ather_Jaipur_1 Ather_Jaipur_2
+9 ChargeZone_Lucknow_1 Relicell_Lucknow_2 ChargeZone_Lucknow_3 Ather_Lucknow_4
+10 ChargeZone_Chandigarh_1 Ather_Chandigarh_2
+11 Ather_Bhopal_1 Relicell_Bhopal_2 ChargeZone_Bhopal_3
+12 Ather_Indore_1 Relicell_Indore_2 TataPower_Indore_3 ChargeZone_Indore_4
+13 ChargeZone_Nagpur_1 TataPower_Nagpur_2
+14 Relicell_Surat_1 TataPower_Surat_2
+15 TataPower_Patna_1 ChargeZone_Patna_2 TataPower_Patna_3
+16 Relicell_Ranchi_1 Ather_Ranchi_2
+17 Relicell_Guwahati_1 TataPower_Guwahati_2
+18 Ather_Kochi_1 Relicell_Kochi_2 TataPower_Kochi_3 Relicell_Kochi_4
+19 Ather_Thiruvananthapuram_1 Ather_Thiruvananthapuram_2 Relicell_Thiruvananthapuram_3 ChargeZone_Thiruvananthapuram_4
+20 TataPower_Coimbatore_1 Relicell_Coimbatore_2 Relicell_Coimbatore_3
+21 Relicell_Nashik_1 TataPower_Nashik_2
+22 ChargeZone_Agra_1 Relicell_Agra_2 Ather_Agra_3 Relicell_Agra_4
+25 Ather_Amritsar_1 ChargeZone_Amritsar_2 Relicell_Amritsar_3 Relicell_Amritsar_4
+26 ChargeZone_Jodhpur_1 ChargeZone_Jodhpur_2
+27 TataPower_Udaipur_1 Relicell_Udaipur_2 ChargeZone_Udaipur_3 Ather_Udaipur_4
+28 Ather_Raipur_1 TataPower_Raipur_2
+29 Ather_Bhubaneswar_1 Relicell_Bhubaneswar_2 TataPower_Bhubaneswar_3 Ather_Bhubaneswar_4
+30 Relicell_Dehradun_1 ChargeZone_Dehradun_2
+31 Ather_Shimla_1 TataPower_Shimla_2 TataPower_Shimla_3
+32 Relicell_Goa_1 ChargeZone_Goa_2 TataPower_Goa_3
+33 ChargeZone_Mysore_1 Relicell_Mysore_2
+34 Ather_Visakhapatnam_1 ChargeZone_Visakhapatnam_2 TataPower_Visakhapatnam_3
+35 TataPower_Vijayawada_1 ChargeZone_Vijayawada_2 Ather_Vijayawada_3 Relicell_Vijayawada_4
+36 Relicell_Madurai_1 Ather_Madurai_2 ChargeZone_Madurai_3 Relicell_Madurai_4
+37 Relicell_Tiruchirappalli_1 Relicell_Tiruchirappalli_2 Ather_Tiruchirappalli_3 Ather_Tiruchirappalli_4
+38 Ather_Gwalior_1 Ather_Gwalior_2 Ather_Gwalior_3 Relicell_Gwalior_4
+39 Relicell_Jhansi_1 Relicell_Jhansi_2
+40 Relicell_Kota_1 ChargeZone_Kota_2
+41 Ather_Bareilly_1 Relicell_Bareilly_2
+42 Relicell_Aligarh_1 Relicell_Aligarh_2 TataPower_Aligarh_3
+43 ChargeZone_Noida_1 ChargeZone_Noida_2
+44 Relicell_Gurugram_1 TataPower_Gurugram_2
+46 Ather_Dhanbad_1 ChargeZone_Dhanbad_2 Ather_Dhanbad_3
+47 Ather_Siliguri_1 Ather_Siliguri_2 Relicell_Siliguri_3

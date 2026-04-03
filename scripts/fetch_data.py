@@ -1,10 +1,8 @@
-import json
+import random
 
 print("Fetching charging stations (offline fallback)...")
 
-# Simulated API response (based on real data)
-data = []
-
+# same simulated data (unchanged)
 data = [
     {"AddressInfo": {"Town": "Delhi"}},
     {"AddressInfo": {"Town": "Gurugram"}},
@@ -60,71 +58,43 @@ data = [
 ]
 
 city_to_id = {
-    "Delhi": 0,
-    "Mumbai": 1,
-    "Bangalore": 2,
-    "Chennai": 3,
-    "Kolkata": 4,
-    "Hyderabad": 5,
-    "Pune": 6,
-    "Ahmedabad": 7,
-    "Jaipur": 8,
-    "Lucknow": 9,
-    "Chandigarh": 10,
-    "Bhopal": 11,
-    "Indore": 12,
-    "Nagpur": 13,
-    "Surat": 14,
-    "Patna": 15,
-    "Ranchi": 16,
-    "Guwahati": 17,
-    "Kochi": 18,
-    "Thiruvananthapuram": 19,
-
-    "Coimbatore": 20,
-    "Nashik": 21,
-    "Agra": 22,
-    "Varanasi": 23,
-    "Kanpur": 24,
-    "Amritsar": 25,
-    "Jodhpur": 26,
-    "Udaipur": 27,
-    "Raipur": 28,
-    "Bhubaneswar": 29,
-    "Dehradun": 30,
-    "Shimla": 31,
-    "Goa": 32,
-    "Mysore": 33,
-    "Visakhapatnam": 34,
-    "Vijayawada": 35,
-    "Madurai": 36,
-    "Tiruchirappalli": 37,
-    "Gwalior": 38,
-    "Jhansi": 39,
-    "Kota": 40,
-    "Bareilly": 41,
-    "Aligarh": 42,
-    "Noida": 43,
-    "Gurugram": 44,
-    "Faridabad": 45,
-    "Dhanbad": 46,
-    "Siliguri": 47,
-    "Imphal": 48,
-    "Aizawl": 49
+    "Delhi": 0, "Mumbai": 1, "Bangalore": 2, "Chennai": 3, "Kolkata": 4,
+    "Hyderabad": 5, "Pune": 6, "Ahmedabad": 7, "Jaipur": 8, "Lucknow": 9,
+    "Chandigarh": 10, "Bhopal": 11, "Indore": 12, "Nagpur": 13, "Surat": 14,
+    "Patna": 15, "Ranchi": 16, "Guwahati": 17, "Kochi": 18, "Thiruvananthapuram": 19,
+    "Coimbatore": 20, "Nashik": 21, "Agra": 22, "Varanasi": 23, "Kanpur": 24,
+    "Amritsar": 25, "Jodhpur": 26, "Udaipur": 27, "Raipur": 28, "Bhubaneswar": 29,
+    "Dehradun": 30, "Shimla": 31, "Goa": 32, "Mysore": 33, "Visakhapatnam": 34,
+    "Vijayawada": 35, "Madurai": 36, "Tiruchirappalli": 37, "Gwalior": 38,
+    "Jhansi": 39, "Kota": 40, "Bareilly": 41, "Aligarh": 42, "Noida": 43,
+    "Gurugram": 44, "Faridabad": 45, "Dhanbad": 46, "Siliguri": 47,
+    "Imphal": 48, "Aizawl": 49
 }
 
-stations = set()
+# realistic station providers
+providers = ["TataPower", "Ather", "ChargeZone", "Relicell"]
+
+city_stations = {}
 
 for item in data:
     city = item["AddressInfo"]["Town"]
 
     if city in city_to_id:
-        stations.add(city_to_id[city])
+        city_id = city_to_id[city]
+
+        num_stations = random.randint(2, 4)
+
+        stations = []
+        for i in range(num_stations):
+            provider = random.choice(providers)
+            stations.append(f"{provider}_{city}_{i+1}")
+
+        city_stations[city_id] = stations
 
 # write to file
 with open("data/stations.txt", "w") as f:
-    for s in sorted(stations):
-        f.write(str(s) + "\n")
+    for city_id, stations in sorted(city_stations.items()):
+        line = str(city_id) + " " + " ".join(stations)
+        f.write(line + "\n")
 
-print("✅ stations.txt updated!")
-print("Stations:", stations)
+print(" stations.txt updated with multi-station support!")

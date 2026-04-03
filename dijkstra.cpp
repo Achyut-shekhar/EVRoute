@@ -19,10 +19,10 @@ vector<int> dijkstra(Graph &g, int src, vector<int> &parent) {
 
         for (auto edge : g.adj[u]) {
             int v = edge.to;
-            int weight = edge.weight;   //  FIXED
+            int w = edge.weight;
 
-            if (weight <= 400 && dist[u] + weight < dist[v]) {
-                dist[v] = dist[u] + weight;
+            if (dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
                 parent[v] = u;
                 pq.push({dist[v], v});
             }

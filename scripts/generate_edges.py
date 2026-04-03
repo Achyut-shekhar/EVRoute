@@ -29,4 +29,4 @@ with open("data/edges.txt", "w") as f:
     for u, v, d in edges:
         f.write(f"{u} {v} {d}\n")
 
-print("✅ edges.txt generated!")
+print("edges.txt generated!")

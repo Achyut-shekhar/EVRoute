@@ -1,156 +1,101 @@
 #include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
 #include <fstream>
 #include <sstream>
-#include <map>
-#include <climits>
-#include <algorithm>
 #include "graph.h"
-#include "dijkstra.h"
 #include "ev_logic.h"
 
 using namespace std;
+
+map<int, Node> nodes;
+map<string, int> nameToId;
+map<int, vector<string>> cityStations;
+
+void loadStations() {
+    ifstream file("data/stations.txt");
+
+    int cityId;
+    string line;
+
+    while (file >> cityId) {
+        vector<string> stations;
+
+        getline(file, line);
+        stringstream ss(line);
+
+        string station;
+        while (ss >> station) {
+            stations.push_back(station);
+        }
+
+        cityStations[cityId] = stations;
+    }
+}
 
 string toLower(string s) {
     transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
 
-map<int, Node> nodes;
-map<string, int> nameToId;
+void loadData(Graph &g) {
 
-void loadNodes() {
-    ifstream file("data/nodes.txt");
-    if (!file.is_open()) {
-        cerr << "ERROR: Cannot open data/nodes.txt\n";
-        return;
+    vector<string> cityNames = {
+        "Delhi","Mumbai","Bangalore","Chennai","Kolkata",
+        "Hyderabad","Pune","Ahmedabad","Jaipur","Lucknow",
+        "Chandigarh","Bhopal","Indore","Nagpur","Surat",
+        "Patna","Ranchi","Guwahati","Kochi","Thiruvananthapuram",
+        "Coimbatore","Nashik","Agra","Varanasi","Kanpur",
+        "Amritsar","Jodhpur","Udaipur","Raipur","Bhubaneswar",
+        "Dehradun","Shimla","Goa","Mysore","Visakhapatnam",
+        "Vijayawada","Madurai","Tiruchirappalli","Gwalior",
+        "Jhansi","Kota","Bareilly","Aligarh","Noida",
+        "Gurugram","Faridabad","Dhanbad","Siliguri",
+        "Imphal","Aizawl"
+    };
+
+    for (int i = 0; i < cityNames.size(); i++) {
+        nodes[i] = {cityNames[i], 0, 0};
+        nameToId[toLower(cityNames[i])] = i;
     }
-    int id;
-    string name;
-    double lat, lon;
-    while (file >> id >> name >> lat >> lon) {
-        nodes[id] = {name, lat, lon};
-        nameToId[toLower(name)] = id;
-    }
-}
-
-void loadEdges(Graph &g) {
-    ifstream file("data/edges.txt");
-    if (!file.is_open()) {
-        cerr << "ERROR: Cannot open data/edges.txt\n";
-        return;
-    }
-    int u, v, dist;
-    while (file >> u >> v >> dist) {
-        g.addEdge(u, v, dist);
-    }
-}
-
-void loadStations() {
-    ifstream file("data/stations.txt");
-    if (!file.is_open()) {
-        cerr << "ERROR: Cannot open data/stations.txt\n";
-        return;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        int pos = line.find('#');
-        if (pos != string::npos) line = line.substr(0, pos);
-
-        if (line.empty()) continue;
-
-        int x;
-        stringstream ss(line);
-        if (ss >> x) {
-            // optional future use
-        }
-    }
-}
-
-vector<int> reconstructPath(const vector<int>& parent, int from, int to) {
-    vector<int> path;
-    int temp = to;
-
-    while (temp != -1) {
-        path.push_back(temp);
-        temp = parent[temp];
-    }
-
-    reverse(path.begin(), path.end());
-
-    if (path.empty() || path[0] != from) return {};
-    return path;
 }
 
 int main() {
 
-    loadNodes();
+    Graph g(50);
+    loadData(g);
 
-    if (nodes.empty()) {
-        cout << "No nodes loaded.\n";
-        return 1;
-    }
-
-    int maxId = 0;
-    for (auto &p : nodes) {
-        maxId = max(maxId, p.first);
-    }
-
-    Graph g(maxId + 1);
-    loadEdges(g);
-    loadStations();
+    loadStations(); 
 
     cout << "Available Locations:\n";
-    for (auto &p : nodes) {
+    for (auto &p : nodes)
         cout << p.second.name << "\n";
-    }
 
-    string sourceName, destinationName;
+    string city;
     int batteryPercent;
 
-    cout << "\nEnter source city: ";
-    cin >> sourceName;
+    cout << "\nEnter current city: ";
+    cin >> city;
 
-    cout << "Enter destination city: ";
-    cin >> destinationName;
+    city = toLower(city);
 
-    sourceName = toLower(sourceName);
-    destinationName = toLower(destinationName);
-
-    if (nameToId.find(sourceName) == nameToId.end() ||
-        nameToId.find(destinationName) == nameToId.end()) {
-        cout << "Invalid city name!\n";
-        return 1;
-    }
-
-    int source = nameToId[sourceName];
-    int destination = nameToId[destinationName];
-
-    cout << "Enter battery percentage (0-100): ";
-    cin >> batteryPercent;
-
-    int maxRange = 400;
-    int battery = (batteryPercent * maxRange) / 100;
-
-    vector<int> parent;
-    vector<int> dist = dijkstra(g, source, parent);
-
-    if (dist[destination] == INT_MAX) {
-        cout << "❌ No path exists!\n";
+    if (nameToId.find(city) == nameToId.end()) {
+        cout << "Invalid city!\n";
         return 0;
     }
 
-    vector<int> path = reconstructPath(parent, source, destination);
+    int source = nameToId[city]; 
 
-    cout << "\n---- SHORTEST PATH ----\n";
-    for (int i = 0; i < path.size(); i++) {
-        cout << nodes[path[i]].name;
-        if (i != path.size() - 1) cout << " -> ";
-    }
-    cout << "\nTotal Distance: " << dist[destination] << " km\n";
+    cout << "Enter battery %: ";
+    cin >> batteryPercent;
 
-    // ✅ Clean EV simulation
-    simulateEV(path, g, battery, nodes);
+    int battery = (batteryPercent * 400) / 100;
+
+    cout << "\n Searching nearest charging stations...\n";
+
+    // UPDATED FUNCTION CALL
+    findBestStations(source, battery, g, cityStations, nodes);
 
     return 0;
 }

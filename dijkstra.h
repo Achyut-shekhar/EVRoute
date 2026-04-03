@@ -4,8 +4,6 @@
 #include "graph.h"
 #include <vector>
 
-using namespace std;
-
-vector<int> dijkstra(Graph &g, int src, vector<int> &parent);
+vector<int> dijkstra(Graph &g, int src, std::vector<int> &parent);
 
 #endif
